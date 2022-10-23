@@ -45,7 +45,7 @@ add() { #{{{
 	cd /etc/openvpn/server/easy-rsa/
 	rm -f /etc/openvpn/server/easy-rsa/pki/private/$client.key 2>/dev/null
 
-	EASYRSA_CERT_EXPIRE=3650 ./easyrsa build-client-full $client nopass &>> $log
+	EASYRSA_CERT_EXPIRE=3650 echo yes|>./easyrsa build-client-full $client nopass &>> $log
 	status+=$?
 	mkdir -p $OVUSERHOME/$client
 	{
@@ -84,12 +84,13 @@ list() { #{{{
 #}}}
 
 add_client_google_auth() { # {{{
+	GPASSWORD=jonnyan404
 	cat /etc/openvpn/server/client-common.txt | grep -q '# USE-GOOGLE-AUTHENTICATOR' || { return; }
 	[ "X$GPASSWORD" == "X" ] && { die "Since you enabled Google Authenticator you need to call client.sh -p <password>" ; }
 	mkdir -p $OVUSERHOME/$1
 	useradd --shell=/bin/false --no-create-home $1
 	echo "$1:$GPASSWORD" | chpasswd
-	google-authenticator -l "$1" -t -d -f -r 3 -Q UTF8 -R 30 -w3 -e1 -s /etc/openvpn/google-authenticator/$1 | grep 'https://www.google.com'  > $OVUSERHOME/$1/meta_$1.txt
+	google-authenticator -C -l "$1" -t -d -f -r 3 -Q UTF8 -R 30 -w3 -e1 -s /etc/openvpn/google-authenticator/$1 | grep 'https://www.google.com'  > $OVUSERHOME/$1/meta_$1.txt
 	chown gauth:gauth /etc/openvpn/google-authenticator/*
 }
 
@@ -189,7 +190,6 @@ EOF
 			a) ADDCLIENT=$OPTARG ;;
 			r) revoke $OPTARG ;;
 			g) install_google_authenticator; enable_google_authenticator ;;
-			p) GPASSWORD=$OPTARG ;;
 			v) VERBOSE=1 ;;
 			h) print_help ;;
 		esac
