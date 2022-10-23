@@ -84,7 +84,7 @@ list() { #{{{
 #}}}
 
 add_client_google_auth() { # {{{
-	GPASSWORD=jonnyan404
+	export GPASSWORD=jonnyan404
 	cat /etc/openvpn/server/client-common.txt | grep -q '# USE-GOOGLE-AUTHENTICATOR' || { return; }
 	[ "X$GPASSWORD" == "X" ] && { die "Since you enabled Google Authenticator you need to call client.sh -p <password>" ; }
 	mkdir -p $OVUSERHOME/$1
