@@ -64,6 +64,7 @@ add() { #{{{
 	echo "</tls-crypt>"
 	} > $OVUSERHOME/$client/${client}.ovpn
 	chown -R $OVUSER $OVUSERHOME/$client
+	zip -qr ${OVUSERHOME}/${client}.zip $OVUSERHOME/$client
 
 	check_status $status $log 
 	echo "OK! $client created"
